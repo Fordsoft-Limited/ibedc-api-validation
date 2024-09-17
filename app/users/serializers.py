@@ -1,6 +1,8 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 
+from app.users.models import CustomUser
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -24,3 +26,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['is_active'] = self.user.is_active
 
         return data
+    
+class CustomUserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)  # Password should be write-only
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'name', 'role', 'password']  # No need for 'id' or 'is_active'
+
+    def create(self, validated_data):
+        # Use the manager's create_user method, which already hashes the password
+        return CustomUser.objects.create_user(**validated_data)
