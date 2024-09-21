@@ -3,6 +3,7 @@ from enum import Enum
 class AppUri(Enum):
     LOGIN = ('login/', 'login')
     LOGOUT = ('logout/', 'logout')
+    CREATE_USER = ('create/', 'create_user')
     REFRESH_TOKEN = ('token/refresh/', 'refresh_token')
 
     def __init__(self, uri, uri_name):
