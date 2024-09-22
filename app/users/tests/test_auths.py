@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from users.views import  LogoutView
+from app.users.views import  LogoutView
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )

@@ -4,12 +4,13 @@ from django.forms import ValidationError
 from django.utils.text import slugify
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, password=None, name=None, role=None, is_active=True):
+    def create_user(self, username, password=None, name=None, role=None, is_active=True, created_by=None):
         user = self.model(
             username=username,
             name=name,
             role=role,
             is_active=is_active,
+            created_by=created_by,
             slug=slugify(username),
         )
         user.set_password(password)
@@ -43,6 +44,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='USER')
     is_staff = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        related_name='created_users' 
+    )
 
     objects = CustomUserManager()
 

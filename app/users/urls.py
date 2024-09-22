@@ -4,9 +4,10 @@ from rest_framework_simplejwt.views import (
 )
 from app.app_url import AppUri
 
-from .views import  LogoutView
+from .views import  LogoutView, create_user
 
 urlpatterns = [
+     path(AppUri.CREATE_USER.uri, create_user, name=AppUri.CREATE_USER.uri_name),
     path(AppUri.LOGOUT.uri, LogoutView.as_view(), name=AppUri.LOGOUT.uri_name),
     path(AppUri.REFRESH_TOKEN.uri, TokenRefreshView.as_view(), name=AppUri.REFRESH_TOKEN.uri_name),
 ]

@@ -5,7 +5,8 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.urls import Resolver404
 from .custom_app_error import ApiException
 from .utils import ApiResponse
-from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
+from .constant import Notification
 
 def custom_exception_handler(exc, context):
     # Handle custom exceptions
@@ -19,7 +20,17 @@ def custom_exception_handler(exc, context):
         # Real message from the exception or provide a default message if necessary
         response = ApiResponse(code="404", errorMessage=str(exc) or "Record not found")
         return response.to_response()
-
+     # Handle Django's Http404 Exception
+    if isinstance(exc, AuthenticationFailed):
+        # Real message from the exception or provide a default message if necessary
+        code, message = Notification.AUTHORIZATION_FAIL.value
+        response = ApiResponse(code=code, errorMessage=str(exc) or message)
+        return response.to_response()
+    if isinstance(exc, NotAuthenticated):
+        # Real message from the exception or provide a default message if necessary
+        code, message = Notification.AUTHORIZATION_FAIL.value
+        response = ApiResponse(code=code, errorMessage=str(exc) or message)
+        return response.to_response()
     # Handle Resolver404 (endpoint not found)
     if isinstance(exc, Resolver404):
         # Extract message from the exception
