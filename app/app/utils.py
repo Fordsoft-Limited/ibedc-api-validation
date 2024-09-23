@@ -24,7 +24,21 @@ class ApiResponse:
         if self.errorMessage is not None:
             response["errorMessage"] = self.errorMessage
 
-        return Response(response, status=self.code)
+        return   Response(response, status=self.code)
+    
+    def to_raw(self):
+        response = {
+            "code": self.code,
+            "status": self.status,
+        }
+
+        if self.data is not None:
+            response["data"] = self.data
+
+        if self.errorMessage is not None:
+            response["errorMessage"] = self.errorMessage
+
+        return   response
 
 def format_errors(errors):
     formatted_errors =""

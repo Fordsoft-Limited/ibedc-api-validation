@@ -1,10 +1,11 @@
 from enum import Enum
 
 class AppUri(Enum):
-    LOGIN = ('login/', 'login')
-    LOGOUT = ('logout/', 'logout')
-    CREATE_USER = ('create/', 'create_user')
-    REFRESH_TOKEN = ('token/refresh/', 'refresh_token')
+    LOGIN = ('login', 'login')
+    LOGOUT = ('logout', 'logout')
+    CREATE_USER = ('create', 'create_user')
+    REFRESH_TOKEN = ('token/refresh', 'refresh_token')
+    CHANGE_PASSWORD = ('change/password', 'change_password')
 
     def __init__(self, uri, uri_name):
         self.uri = uri

@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
-from .serializers import CustomUserSerializer
+from .serializers import ChangePasswordSerializer, CustomUserSerializer
 from app.utils import ApiResponse, format_errors,attach_user_to_request
 from app.constant import Notification
 from app.custom_app_error import StandardApplicationException
@@ -27,7 +27,7 @@ class LogoutView(APIView):
 
 @extend_schema(
     request=CustomUserSerializer,
-    responses={201: CustomUserSerializer, 400: 'Validation Error'}
+    responses={201: ApiResponse, 400: 'Validation Error'}
 )
 @api_view(['POST'])
 @attach_user_to_request
@@ -35,8 +35,24 @@ class LogoutView(APIView):
 def create_user(request):
         new_account =CustomUserSerializer(data = request.data)
         if new_account.is_valid():
-            new_account.save(create_by = request.user)
+            new_account.save(created_by = request.user)
             return ApiResponse(data=Notification.ACCOUNT_CREATION_SUCCESS.message).to_response()
+        
+        raise StandardApplicationException(message=format_errors(new_account.errors), code=400)
+
+
+@extend_schema(
+    request=ChangePasswordSerializer,
+    responses={201: ApiResponse, 400: 'Validation Error'}
+)
+@api_view(['POST'])
+@attach_user_to_request
+@permission_classes([IsAuthenticated])
+def change_password(request):
+        new_account =ChangePasswordSerializer(data = request.data, context={"user": request.user})
+        if new_account.is_valid():
+            new_account.save()
+            return ApiResponse(data=Notification.PASSWORD_CHANGED.message).to_response()
         
         raise StandardApplicationException(message=format_errors(new_account.errors), code=400)
   

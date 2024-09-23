@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from app.utils import ApiResponse
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -18,13 +18,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         # Get the original response data (access and refresh tokens)
         data = super().validate(attrs)
-
-        # Add additional user details to the response (besides the token itself)
-        data['name'] = self.user.name
-        data['role'] = self.user.role
-        data['slug'] = self.user.slug
-        data['username'] = self.user.username
-        data['is_active'] = self.user.is_active
-
-        return data
+        user_data = {
+            'access_token': data['access'],
+            'refresh_token': data['refresh'],
+            'name': self.user.name,
+            'role': self.user.role,
+            'slug': self.user.slug,
+            'username': self.user.username,
+            'is_active': self.user.is_active
+        }
+     
+        return  ApiResponse(data=user_data).to_raw()
     

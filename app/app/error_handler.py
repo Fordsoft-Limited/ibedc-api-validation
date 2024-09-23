@@ -7,8 +7,20 @@ from .custom_app_error import ApiException
 from .utils import ApiResponse
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from .constant import Notification
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 def custom_exception_handler(exc, context):
+
+    if isinstance(exc, (TokenError, InvalidToken)):
+        # Extract the message (simplify the error)
+        error_message = exc.args[0].get('detail', Notification.AUTHENTICATION_FAIL.message)
+
+        # Create a custom ApiResponse with the extracted error message
+        api_response = ApiResponse(
+            code=403,  # 403 Forbidden for token errors
+            errorMessage=error_message
+        )
+        return api_response.to_response()
     # Handle custom exceptions
     if isinstance(exc, ApiException):
         # Use the actual message and status code from the custom exception
@@ -27,6 +39,7 @@ def custom_exception_handler(exc, context):
         response = ApiResponse(code=code, errorMessage=str(exc) or message)
         return response.to_response()
     if isinstance(exc, NotAuthenticated):
+        print("Token not valid")
         # Real message from the exception or provide a default message if necessary
         code, message = Notification.AUTHORIZATION_FAIL.value
         response = ApiResponse(code=code, errorMessage=str(exc) or message)
@@ -39,7 +52,6 @@ def custom_exception_handler(exc, context):
 
     # Handle Django's PermissionDenied Exception
     if isinstance(exc, PermissionDenied):
-        # Extract the actual message
         response = ApiResponse(code="403", errorMessage=str(exc) or "Permission denied")
         return response.to_response()
 
@@ -55,12 +67,12 @@ def custom_exception_handler(exc, context):
         # Use the actual message from the exception
         response = ApiResponse(code="400", errorMessage=str(exc) or "Invalid data")
         return response.to_response()
-
     # Handle other unhandled exceptions using DRF's exception handler
     response = exception_handler(exc, context)
 
     # If DRF didn't handle the exception, return a generic 500 error
     if response is None:
+        print(exc)
         # Provide default error message only for internal server errors
         response = ApiResponse(code="500", errorMessage="An internal server error occurred.")
         return response.to_response()

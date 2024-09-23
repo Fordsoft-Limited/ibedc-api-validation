@@ -86,7 +86,7 @@ SPECTACULAR_SETTINGS = {
     'AUTHENTICATION_WHITELIST': [],  # Keep endpoints accessible
     'SECURITY': [
         {
-            'BearerAuth': []
+            'BearerAuth': []  # Make sure this name is consistent
         }
     ],
     'COMPONENT_SPLIT_REQUEST': True,
@@ -96,9 +96,11 @@ SPECTACULAR_SETTINGS = {
             'type': 'http',
             'scheme': 'bearer',
             'bearerFormat': 'JWT',
+            'name': 'BearerAuth'  # This name should match
         }
     ],
 }
+
 AUTH_USER_MODEL = 'users.CustomUser'
 WSGI_APPLICATION = 'app.wsgi.application'
 
