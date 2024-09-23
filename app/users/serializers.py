@@ -28,7 +28,7 @@ class ChangePasswordSerializer(serializers.Serializer):
     
     def validate_old_password(self, password):
         login_user = self.__get_login_user()
-        if not login_user.check_password(password):
+        if  login_user and not login_user.check_password(password):
             code, message = Notification.PASSWORD_NOT_MATCH.value
             raise StandardApplicationException(code=code, message=message)
         return password
