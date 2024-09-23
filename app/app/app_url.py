@@ -4,6 +4,7 @@ class AppUri(Enum):
     LOGIN = ('login', 'login')
     LOGOUT = ('logout', 'logout')
     CREATE_USER = ('create', 'create_user')
+    LIST_USER = ('', 'list_user')
     REFRESH_TOKEN = ('token/refresh', 'refresh_token')
     CHANGE_PASSWORD = ('change/password', 'change_password')
 

@@ -2,9 +2,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
+
+from users.models import CustomUser
 from .serializers import ChangePasswordSerializer, CustomUserSerializer
 from app.utils import ApiResponse, format_errors,attach_user_to_request
 from app.constant import Notification
@@ -24,6 +27,10 @@ class LogoutView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class UserListView(ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    pagination_class = None  
 
 @extend_schema(
     request=CustomUserSerializer,

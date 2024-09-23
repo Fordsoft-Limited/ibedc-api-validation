@@ -3,6 +3,8 @@ from django.db import models
 from django.forms import ValidationError
 from django.utils.text import slugify
 
+from app.model import BaseModel
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, name=None, role=None, is_active=True, created_by=None):
         user = self.model(
@@ -31,7 +33,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = (
         ('ADMIN', 'Admin'),
         ('APPROVAL', 'Approval'),
