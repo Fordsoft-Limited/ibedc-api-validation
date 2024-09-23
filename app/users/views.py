@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 
+from app.model import DataPagination
 from users.models import CustomUser
 from .serializers import ChangePasswordSerializer, CustomUserSerializer
 from app.utils import ApiResponse, format_errors,attach_user_to_request
@@ -30,7 +31,7 @@ class LogoutView(APIView):
 class UserListView(ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = None  
+    pagination_class = DataPagination
 
 @extend_schema(
     request=CustomUserSerializer,

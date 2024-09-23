@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.utils import timezone
+from rest_framework.pagination import PageNumberPagination
 
 class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -9,3 +10,8 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+
+class DataPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'  
+    max_page_size = 200  

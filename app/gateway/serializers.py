@@ -28,5 +28,5 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'is_active': self.user.is_active
         }
      
-        return  ApiResponse(data=user_data).to_raw()
+        return  user_data
     

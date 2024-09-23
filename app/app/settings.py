@@ -72,6 +72,9 @@ TEMPLATES = [
     },
 ]
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'app.utils.CustomApiRenderer',  # Replace with the path to your custom renderer
+    ],
     'EXCEPTION_HANDLER':'app.error_handler.custom_exception_handler',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
