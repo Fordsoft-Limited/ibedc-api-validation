@@ -1,6 +1,6 @@
 from users.models import CustomUser
 from rest_framework.test import APITestCase
-from users.serializers import (CustomUserSerializer, ChangePasswordSerializer)
+from users.serializers import ( ChangePasswordSerializer)
 
 class TestChangePasswordSerializer(APITestCase):
     def setUp(self):

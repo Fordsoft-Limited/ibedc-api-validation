@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'app.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -74,9 +74,9 @@ TEMPLATES = [
 ]
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
-        'app.utils.CustomApiRenderer',  # Replace with the path to your custom renderer
+        'core.utils.CustomApiRenderer',  # Replace with the path to your custom renderer
     ],
-    'EXCEPTION_HANDLER':'app.error_handler.custom_exception_handler',
+    'EXCEPTION_HANDLER':'core.error_handler.custom_exception_handler',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -108,7 +108,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 AUTH_USER_MODEL = 'users.CustomUser'
-WSGI_APPLICATION = 'app.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
