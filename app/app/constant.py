@@ -6,6 +6,7 @@ class Notification(Enum):
     ACCOUNT_CREATION_SUCCESS = (201, 'Success! Your account has been successfully created.')
     PASSWORD_NOT_MATCH = (400, 'Old password not match existing password')
     PASSWORD_CHANGED = (200, 'Password changed successfully')
+    FILE_UPLOADED = (200, 'File uploaded successfully')
    
 
     def __init__(self, code, message):

@@ -7,6 +7,7 @@ class AppUri(Enum):
     LIST_USER = ('list', 'list_user')
     REFRESH_TOKEN = ('token/refresh', 'refresh_token')
     CHANGE_PASSWORD = ('change/password', 'change_password')
+    FILE_UPLOAD = ('upload', 'file_upload')
 
     def __init__(self, uri, uri_name):
         self.uri = uri
