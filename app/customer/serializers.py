@@ -12,25 +12,37 @@ class FileUploadSerializer(serializers.Serializer):
     constraints = serializers.JSONField(required=False)  # Optional constraints, can be blank
 
     def validate_file(self, file):
-        if file.name.endswith('.xlsx') or file.name.endswith('.csv'):
+        """Validate file type and apply constraints for CSV and Excel files."""
+        if file.name.endswith('.xlsx'):
+            # Handle Excel file with constraints (if provided)
             constraints = self.initial_data.get('constraints', None)
             if constraints:
                 constraints = self._parse_constraints(constraints)
-
-                if file.name.endswith('.xlsx'):
-                    return self._validate_excel(file, constraints)
-                elif file.name.endswith('.csv'):
-                    return self._validate_csv(file, constraints)
+                return self._validate_excel(file, constraints)
             else:
                 return file
+
+        elif file.name.endswith('.csv'):
+            # Handle CSV file with constraints (if provided)
+            constraints = self.initial_data.get('constraints', None)
+            if constraints:
+                constraints = self._parse_constraints(constraints)
+                return self._validate_csv(file, constraints)
+            else:
+                return file
+
+        # Accept other file types without constraints validation
+        elif file.name.endswith(('.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx', '.ppt', '.pptx', '.mp4', '.avi')):
+            return file
+
         else:
-            raise serializers.ValidationError("Unsupported file type. Only .xlsx or .csv files are allowed.")
+            raise serializers.ValidationError("Unsupported file type. Only .xlsx, .csv, .pdf, .jpg, .png, .gif, .txt, .doc, .ppt, and video files are allowed.")
 
     def _validate_excel(self, file, constraints):
         try:
             df = pd.read_excel(file)
         except Exception as e:
-            raise serializers.ValidationError(f"Error reading Excel file: {e}")
+            raise serializers.InvalidDataFormatException(f"Error reading Excel file: {e}")
 
         self._validate_columns_and_dtypes(df, constraints)
         return file
@@ -39,7 +51,7 @@ class FileUploadSerializer(serializers.Serializer):
         try:
             df = pd.read_csv(file)
         except Exception as e:
-            raise serializers.ValidationError(f"Error reading CSV file: {e}")
+            raise serializers.InvalidDataFormatException(f"Error reading CSV file: {e}")
 
         self._validate_columns_and_dtypes(df, constraints)
         return file
@@ -71,7 +83,6 @@ class FileUploadSerializer(serializers.Serializer):
                     errors.append(
                         f"Incorrect data type for column '{col}'. Expected {expected_dtype}, got {actual_dtype_display}."
                     )
-
 
         # If there are any errors, raise a single ValidationError with all errors combined
         if errors:

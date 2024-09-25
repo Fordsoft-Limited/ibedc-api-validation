@@ -8,4 +8,4 @@ class TestCustomerEndpoint(SimpleTestCase):
         url = reverse(AppUri.FILE_UPLOAD.uri_name)
         view = resolve(url)
         self.assertEqual(view.func.view_class, FileUploadView)
-    
+
