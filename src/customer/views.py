@@ -5,7 +5,7 @@ from rest_framework import status
 import os
 from django.conf import settings
 # from django.core.files.base import ContentFile
-from .serializers import FileUploadSerializer
+from .serializers.upload_sl import FileUploadSerializer
 from core.constant import Notification
 from core.utils import ApiResponse
 from rest_framework.parsers import MultiPartParser, FormParser

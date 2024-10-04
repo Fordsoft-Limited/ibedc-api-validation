@@ -1,3 +1,5 @@
+import random
+import string
 from rest_framework.response import Response
 from functools import wraps
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -5,6 +7,14 @@ from rest_framework.exceptions import AuthenticationFailed
 from .custom_app_error import StandardApplicationException
 from .constant import Notification
 from rest_framework.renderers import JSONRenderer
+
+
+def generate_batch_code():
+        """
+        Generate a random base62 (6 character) batch code.
+        """
+        chars = string.ascii_letters + string.digits  # Base62 includes a-z, A-Z, 0-9
+        return ''.join(random.choices(chars, k=6))
 
 class ApiResponse:
     def __init__(self, code=200, data=None, errorMessage=None):
@@ -93,3 +103,4 @@ class CustomApiRenderer(JSONRenderer):
 
         # Use ApiResponse's to_response method to convert it
         return super().render(api_response.get_data(), accepted_media_type, renderer_context)
+    

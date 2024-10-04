@@ -1,7 +1,7 @@
 from django.test import TestCase
 from io import BytesIO
 import pandas as pd
-from customer.serializers import FileUploadSerializer  
+from customer.serializers.upload_sl import FileUploadSerializer  
 import json
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.custom_app_error import InvalidDataFormatException
