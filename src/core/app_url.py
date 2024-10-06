@@ -6,6 +6,14 @@ class AppUri(Enum):
     CREATE_USER = ('create', 'create_user')
     LIST_USER = ('list', 'list_user')
     REFRESH_TOKEN = ('token/refresh', 'refresh_token')
+    CUSTOMER_SINGE_VALIDATE = ('validate', 'validate_single_customer')
+    CUSTOMER_BULK_VALIDATE = ('validate/bulk', 'validate_bulk_customer')
+    CUSTOMER_RETRIEVE = ('<str:customer_no>', 'RETRIEVE')
+    CUSTOMER_LIST = ('', 'list_customer')
+    CUSTOMER_LIST_BY_FEEDER_OR_BU = ('list/<str:filter_type>/<str:feeder>', 'list_customer_by_feeder_or_bu')
+    CUSTOMER_REVIEW = ('review/<str:review_type>/<str:review_value>', 'list_customer') # review_type(FEEDER, BU, BATCH_CODE), review_value(feedername, or bu_name, or batch_code_value)
+
+
     CHANGE_PASSWORD = ('change/password', 'change_password')
     FILE_UPLOAD = ('upload', 'file_upload')
 

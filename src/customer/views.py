@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status
 import os
 from django.conf import settings
-# from django.core.files.base import ContentFile
 from .serializers.upload_sl import FileUploadSerializer
 from core.constant import Notification
 from core.utils import ApiResponse
