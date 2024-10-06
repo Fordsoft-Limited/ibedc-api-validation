@@ -38,7 +38,7 @@ class UserListView(ListAPIView):
     responses={201: ApiResponse, 400: 'Validation Error'}
 )
 @api_view(['POST'])
-@attach_user_to_request
+# @attach_user_to_request
 @permission_classes([IsAuthenticated])
 def create_user(request):
         new_account =CustomUserSerializer(data = request.data)

@@ -3,7 +3,7 @@ from django.http import Http404
 from django.core.exceptions import PermissionDenied, ValidationError as DjangoValidationError
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from django.urls import Resolver404
-from .custom_app_error import ApiException
+from .custom_app_error import ApiException, StandardApplicationException
 from .utils import ApiResponse
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from .constant import Notification
@@ -13,17 +13,15 @@ def custom_exception_handler(exc, context):
 
     if isinstance(exc, (TokenError, InvalidToken)):
         # Extract the message (simplify the error)
-        error_message = exc.args[0].get('detail', Notification.AUTHENTICATION_FAIL.message)
-
-        # Create a custom ApiResponse with the extracted error message
+        error_message = exc.args[0].get('detail', str(exc))
         api_response = ApiResponse(
-            code=403,  # 403 Forbidden for token errors
-            errorMessage=error_message
+            code=403,  
+            errorMessage=str(error_message) 
         )
         return api_response.to_response()
     # Handle custom exceptions
     if isinstance(exc, ApiException):
-        # Use the actual message and status code from the custom exception
+      
         response = ApiResponse(code=exc.code, errorMessage=str(exc.message))
         return response.to_response()
 
@@ -62,13 +60,12 @@ def custom_exception_handler(exc, context):
         response = ApiResponse(code="400", errorMessage=error_message)
         return response.to_response()
 
-    # Handle Python's ValueError
+   
     if isinstance(exc, ValueError):
-        # Use the actual message from the exception
         response = ApiResponse(code="400", errorMessage=str(exc) or "Invalid data")
         return response.to_response()
-    # Handle other unhandled exceptions using DRF's exception handler
     response = exception_handler(exc, context)
+
 
     # If DRF didn't handle the exception, return a generic 500 error
     if response is None:

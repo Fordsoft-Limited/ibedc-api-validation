@@ -7,6 +7,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from .custom_app_error import StandardApplicationException
 from .constant import Notification
 from rest_framework.renderers import JSONRenderer
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 
 def generate_batch_code():
@@ -55,22 +56,35 @@ def format_errors(errors):
             formatted_errors += f"{field}: {error_list[0].__str__()}; " 
     return formatted_errors
 
+def get_user_from_jwt_token(request):
+    """
+    Extract and validate the JWT token from the request header.
+    Attach the user to the request object if the token is valid.
+    Handle multiple exceptions like AuthenticationFailed, InvalidToken, etc.
+    """
+    try:
+        auth = JWTAuthentication()
+        user,token = auth.authenticate(request)
+        if user:
+            
+            request.user = user
+        return user 
+    except InvalidToken as e:
+        raise e
 
+    except TokenError as e:
+        raise e
+    except AuthenticationFailed as e:
+        raise e
+   
+
+
+    
 
 def attach_user_to_request(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        # Extract and validate the JWT token from the request header
-        try:
-            auth = JWTAuthentication()
-            # This will return a tuple (user, validated_token)
-            user, token = auth.authenticate(request)
-            if user:
-                # Attach the user to the request
-                request.user = user
-        except AuthenticationFailed:
-            code, message = Notification.AUTHENTICATION_FAIL.value
-            raise StandardApplicationException(message=message, status=code)
+        get_user_from_jwt_token(request)
 
         return view_func(request, *args, **kwargs)
 
