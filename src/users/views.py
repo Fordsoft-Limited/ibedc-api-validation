@@ -15,18 +15,21 @@ from core.constant import Notification
 from core.custom_app_error import StandardApplicationException
 
 
-class LogoutView(APIView):
-    def post(self, request):
-        try:
-            # Get the refresh token from the request data
+@extend_schema(
+    request=CustomUserSerializer,
+    responses={201: ApiResponse}
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout(self, request):
+       
+     # Get the refresh token from the request data
             refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)
             
             # Blacklist the token
             token.blacklist()
-            return Response({"message": "Logout successful"}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return ApiResponse(data=Notification.LOGOUT_SUCCESSFUL, status=status.HTTP_205_RESET_CONTENT).to_response()
 
 class UserListView(ListAPIView):
     queryset = CustomUser.objects.all()
@@ -38,7 +41,6 @@ class UserListView(ListAPIView):
     responses={201: ApiResponse, 400: 'Validation Error'}
 )
 @api_view(['POST'])
-# @attach_user_to_request
 @permission_classes([IsAuthenticated])
 def create_user(request):
         new_account =CustomUserSerializer(data = request.data)
@@ -54,7 +56,6 @@ def create_user(request):
     responses={201: ApiResponse, 400: 'Validation Error'}
 )
 @api_view(['POST'])
-@attach_user_to_request
 @permission_classes([IsAuthenticated])
 def change_password(request):
         new_account =ChangePasswordSerializer(data = request.data, context={"user": request.user})

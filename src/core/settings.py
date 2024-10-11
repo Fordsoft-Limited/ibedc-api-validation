@@ -86,6 +86,11 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10, 
 }
 SPECTACULAR_SETTINGS = {
+     'ENUM_NAME_OVERRIDES': {
+        'CustomerCorrectTariffCodeEnum': 'CorrectTariffCodeEnum',  
+        'CustomerMeterSaledEnum': 'MeterSaledEnum',  
+        'CustomerHasAccountNoEnum': 'HasAccountNoEnum',  
+    },
     'TITLE': 'IBEDC Validation API',
     'DESCRIPTION': 'Set of API for validation of customer data',
     'VERSION': '1.0.0',

@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from users.views import  (LogoutView, create_user, change_password)
+from users.views import  (logout, create_user, change_password)
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -10,7 +10,7 @@ class TestEndpoint(SimpleTestCase):
     def test_logout(self):
         logout_url = reverse(AppUri.LOGOUT.uri_name)
         logout_view = resolve(logout_url)
-        self.assertEqual(logout_view.func.view_class, LogoutView)
+        self.assertEqual(logout_view.func, logout)
     def test_refresh_token(self):
         token_refresh_url = reverse(AppUri.REFRESH_TOKEN.uri_name)
         view = resolve(token_refresh_url)

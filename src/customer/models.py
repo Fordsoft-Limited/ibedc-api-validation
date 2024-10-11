@@ -4,19 +4,42 @@ from django.utils import timezone
 from core.utils import generate_batch_code
 from core.model import BaseModel
 
+from django.db.models import Q
 
+class CustomerManager(models.Manager):
+    """
+    Custom manager for Customer model to handle filtering logic.
+    """
+
+    def filter_all(self, filter_dict, use_or=False):
+        """
+        Takes a dictionary of key-value pairs and returns a filtered list of customers.
+        Allows OR logic by passing `use_or=True`.
+
+        Args:
+        - filter_dict: A dictionary where the keys are field names and the values are the values to filter by.
+        - use_or: Boolean flag to specify whether to use OR or AND for filtering.
+
+        Returns:
+        - A queryset of filtered Customer objects.
+        """
+        if not isinstance(filter_dict, dict):
+            raise ValueError("Filter must be a dictionary of key-value pairs")
+
+        if use_or:
+            query = Q()
+            for key, value in filter_dict.items():
+                query |= Q(**{key: value})  # Add each condition with OR
+            return self.filter(query)
+        else:
+            return self.filter(**filter_dict)
+        
 class CustomerBatch(BaseModel):
     VALIDATION_TYPE_CHOICES = [('Single', 'Single'), ('Bulk', 'Bulk')]
-    REVIEW_STATUS_CHOICES = [('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')]
-
     slug = models.SlugField(max_length=150, unique=True, blank=False)
     batch_code = models.CharField(max_length=6, default=generate_batch_code, unique=True, editable=False)
     validation_type = models.CharField(max_length=10, choices=VALIDATION_TYPE_CHOICES, default='Single')
     created_by = models.ForeignKey('users.CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_batches')
-    approved_by = models.ForeignKey('users.CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_batches')
-    approval_comments = models.TextField(null=True, blank=True)
-    aproval_status = models.CharField(max_length=10, choices=REVIEW_STATUS_CHOICES, default='Pending')
-    date_approved = models.DateTimeField(null=True, blank=True)
     total_approved = models.PositiveIntegerField(default=0)
     total_rejected = models.PositiveIntegerField(default=0)
     total_record = models.PositiveIntegerField(default=0)
@@ -83,7 +106,9 @@ class Customer(BaseModel):
     ('MD2', 'MD2'),
     ('MD3', 'MD3'),
                 ]
-    
+    REVIEW_STATUS_CHOICES = [('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')]
+
+    customer_no = models.CharField(max_length=11, unique=True, blank=True)
     slug = models.SlugField(max_length=150, unique=True, blank=False)
     customer_full_name = models.CharField(max_length=255)
     account_no = models.CharField(max_length=50)
@@ -96,8 +121,8 @@ class Customer(BaseModel):
     setup_date = models.DateField(default=timezone.now)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    customer_id = models.CharField(max_length=200, null=True, blank=True)  # Unique customer ID
-    cin = models.CharField(max_length=50, null=True, blank=True)  # Customer Identification Number
+    customer_id = models.CharField(max_length=200, null=True, blank=True) 
+    cin = models.CharField(max_length=50, null=True, blank=True)  
     application_date = models.DateField(null=True, blank=True)
     mobile = models.CharField(max_length=15)
     email = models.EmailField(null=True, blank=True)
@@ -119,7 +144,7 @@ class Customer(BaseModel):
     account_category = models.CharField(max_length=10, choices=ACCOUNT_CATEGORY_CHOICES)
     connection_type = models.CharField(max_length=10, choices=CONNECTION_TYPE_CHOICES)
     cust_nature_of_business = models.CharField(max_length=255, null=True, blank=True)
-    customer_nin = models.CharField(max_length=20, null=True, blank=True)  # National Identification Number
+    customer_nin = models.CharField(max_length=20, null=True, blank=True)  
     customer_supply_type = models.CharField(max_length=10, choices=SUPPLY_TYPE_CHOICES)
     customer_estimated_load = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     cust_has_meter = models.CharField(max_length=3, choices=YES_NO_CHOICES, default='No')
@@ -137,7 +162,25 @@ class Customer(BaseModel):
     tenant_name = models.CharField(max_length=255, null=True, blank=True)
     tenant_phone = models.CharField(max_length=15, null=True, blank=True)
     meter_ct_ratio = models.CharField(max_length=50, null=True, blank=True)
+    approved_by = models.ForeignKey('users.CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_batches')
+    approval_comments = models.TextField(null=True, blank=True)
+    aproval_status = models.CharField(max_length=10, choices=REVIEW_STATUS_CHOICES, default='Pending')
+    date_approved = models.DateTimeField(null=True, blank=True)
     customer_batch = models.ForeignKey(CustomerBatch, on_delete=models.CASCADE, related_name="customers")
+    data_entry_history = models.JSONField(default=list, blank=True)
+    objects = CustomerManager()
+
+    def save(self, *args, **kwargs):
+        # Generate customer_no based on the id if not already set
+        if not self.customer_no:
+            self.customer_no = self.generate_customer_no()
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.customer_full_name} - {self.account_no}"
+        return f"{self.customer_full_name} - {self.customer_no}"
+    
+    def generate_customer_no(self):
+        """
+        Generates an 11-digit customer_no based on the auto-incrementing id.
+        """
+        return str(self.id).zfill(11)

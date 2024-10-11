@@ -3,6 +3,7 @@ class Notification(Enum):
     AUTHENTICATION_FAIL = (401, 'Authentication failed: Invalid credentials provided.')
     AUTHORIZATION_FAIL = (403, 'Authorization failed: Access is denied due to insufficient permissions.')
     LOGIN_FAIL = (404, 'Login failed: Either username or password is incorrect.')
+    LOGOUT_SUCCESSFUL = (200, 'Logout completed successfully')
     ACCOUNT_CREATION_SUCCESS = (201, 'Success! Your account has been successfully created.')
     PASSWORD_NOT_MATCH = (400, 'Old password not match existing password')
     PASSWORD_CHANGED = (200, 'Password changed successfully')
