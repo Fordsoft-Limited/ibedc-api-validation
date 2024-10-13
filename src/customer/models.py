@@ -36,7 +36,6 @@ class CustomerManager(models.Manager):
         
 class CustomerBatch(BaseModel):
     VALIDATION_TYPE_CHOICES = [('Single', 'Single'), ('Bulk', 'Bulk')]
-    slug = models.SlugField(max_length=150, unique=True, blank=False)
     batch_code = models.CharField(max_length=6, default=generate_batch_code, unique=True, editable=False)
     validation_type = models.CharField(max_length=10, choices=VALIDATION_TYPE_CHOICES, default='Single')
     created_by = models.ForeignKey('users.CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_batches')
@@ -108,7 +107,7 @@ class Customer(BaseModel):
                 ]
     REVIEW_STATUS_CHOICES = [('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')]
 
-    customer_no = models.CharField(max_length=11, unique=True, blank=True)
+    customer_no = models.CharField(max_length=11, unique=True, editable=False)
     slug = models.SlugField(max_length=150, unique=True, blank=False)
     customer_full_name = models.CharField(max_length=255)
     account_no = models.CharField(max_length=50)
@@ -122,7 +121,7 @@ class Customer(BaseModel):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     customer_id = models.CharField(max_length=200, null=True, blank=True) 
-    cin = models.CharField(max_length=50, null=True, blank=True)  
+    cin = models.CharField(max_length=50, null=False, blank=False)  
     application_date = models.DateField(null=True, blank=True)
     mobile = models.CharField(max_length=15)
     email = models.EmailField(null=True, blank=True)
@@ -171,16 +170,9 @@ class Customer(BaseModel):
     objects = CustomerManager()
 
     def save(self, *args, **kwargs):
-        # Generate customer_no based on the id if not already set
-        if not self.customer_no:
-            self.customer_no = self.generate_customer_no()
-        super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.customer_full_name} - {self.customer_no}"
     
-    def generate_customer_no(self):
-        """
-        Generates an 11-digit customer_no based on the auto-incrementing id.
-        """
-        return str(self.id).zfill(11)
+   

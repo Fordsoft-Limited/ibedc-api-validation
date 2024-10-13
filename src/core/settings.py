@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -111,6 +112,16 @@ SPECTACULAR_SETTINGS = {
             'name': 'BearerAuth'  # This name should match
         }
     ],
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Access token expiration time
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # Refresh token expiration time
+    'ROTATE_REFRESH_TOKENS': False,                 # To rotate refresh tokens on usage
+    'BLACKLIST_AFTER_ROTATION': True,               # To blacklist refresh tokens after usage
+    'ALGORITHM': 'HS256',                           # JWT signing algorithm
+    'SIGNING_KEY': SECRET_KEY,                      # Key used to sign the tokens
+    'VERIFYING_KEY': None,                          # Key used to verify tokens (usually with RS256)
+    'AUTH_HEADER_TYPES': ('Bearer',),               # Authorization header (e.g., Bearer token)
 }
 
 AUTH_USER_MODEL = 'users.CustomUser'

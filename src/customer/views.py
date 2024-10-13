@@ -56,19 +56,9 @@ class FileUploadView(APIView):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def validate_customer(request):
-        # Create a new batch and pass it to the serializer
-        batch = CustomerBatch.objects.create(
-            created_by=request.user,
-            validation_type='Single',
-            total_record=1
-        )
-        customer_data = request.data
-        customer_data['customer_batch'] = batch
-        customer_data['created_by'] = request.user
-        serializer = CustomerSerializer(data=customer_data)
-
+        serializer = CustomerSerializer(data=request.data, context={"created_by": request.user})
         if serializer.is_valid(raise_exception=True):
-            serializer.save()  # Save will automatically handle create/update
+            serializer.save() 
 
             return ApiResponse(data="Customer processed successfully").to_response()
 

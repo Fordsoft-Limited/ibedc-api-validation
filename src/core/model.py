@@ -7,7 +7,7 @@ class BaseModel(models.Model):
     id = models.BigAutoField(primary_key=True)
     uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
-    last_modified = models.DateTimeField(default=timezone.now)
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
