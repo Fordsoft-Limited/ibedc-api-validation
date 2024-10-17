@@ -22,18 +22,12 @@ class FileUploadSerializer(serializers.Serializer):
                 return file
 
         elif file.name.endswith('.csv'):
-            # Handle CSV file with constraints (if provided)
             constraints = self.initial_data.get('constraints', None)
             if constraints:
                 constraints = self._parse_constraints(constraints)
                 return self._validate_csv(file, constraints)
             else:
                 return file
-
-        # Accept other file types without constraints validation
-        elif file.name.endswith(('.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx', '.ppt', '.pptx', '.mp4', '.avi')):
-            return file
-
         else:
             raise InvalidDataFormatException("Unsupported file type. Only .xlsx, .csv, .pdf, .jpg, .png, .gif, .txt, .doc, .ppt, and video files are allowed.")
 
