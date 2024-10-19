@@ -28,7 +28,7 @@ def custom_exception_handler(exc, context):
     # Handle Django's Http404 Exception
     if isinstance(exc, Http404):
         # Real message from the exception or provide a default message if necessary
-        response = ApiResponse(code="404", errorMessage=str(exc) or "Record not found")
+        response = ApiResponse(code=404, errorMessage=str(exc) or "Record not found")
         return response.to_response()
      # Handle Django's Http404 Exception
     if isinstance(exc, AuthenticationFailed):
@@ -37,7 +37,6 @@ def custom_exception_handler(exc, context):
         response = ApiResponse(code=code, errorMessage=str(exc) or message)
         return response.to_response()
     if isinstance(exc, NotAuthenticated):
-        print("Token not valid")
         # Real message from the exception or provide a default message if necessary
         code, message = Notification.AUTHORIZATION_FAIL.value
         response = ApiResponse(code=code, errorMessage=str(exc) or message)
@@ -45,34 +44,31 @@ def custom_exception_handler(exc, context):
     # Handle Resolver404 (endpoint not found)
     if isinstance(exc, Resolver404):
         # Extract message from the exception
-        response = ApiResponse(code="404", errorMessage=str(exc) or "Endpoint not found")
+        response = ApiResponse(code=404, errorMessage=str(exc) or "Endpoint not found")
         return response.to_response()
 
     # Handle Django's PermissionDenied Exception
     if isinstance(exc, PermissionDenied):
-        response = ApiResponse(code="403", errorMessage=str(exc) or "Permission denied")
+        response = ApiResponse(code=403, errorMessage=str(exc) or "Permission denied")
         return response.to_response()
 
     # Handle Django's and DRF's ValidationError
     if isinstance(exc, (DjangoValidationError, DRFValidationError)):
         # Extract the validation error messages
         error_message = getattr(exc, 'detail', str(exc))
-        response = ApiResponse(code="400", errorMessage=error_message)
+        response = ApiResponse(code=400, errorMessage=error_message)
         return response.to_response()
 
    
     if isinstance(exc, ValueError):
-        response = ApiResponse(code="400", errorMessage=str(exc) or "Invalid data")
+        response = ApiResponse(code=400, errorMessage=str(exc) or "Invalid data")
         return response.to_response()
     response = exception_handler(exc, context)
 
 
     # If DRF didn't handle the exception, return a generic 500 error
     if response is None:
-        print(exc)
         # Provide default error message only for internal server errors
-        response = ApiResponse(code="500", errorMessage="An internal server error occurred.")
+        response = ApiResponse(code=500, errorMessage="An internal server error occurred.")
         return response.to_response()
-
-    # For other errors, use the DRF-generated response
     return response

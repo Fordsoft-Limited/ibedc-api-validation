@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-auhr*$@uh4t(adcjpx5@j5(g-um30gkddtax5nfqwtylj*770i
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+APPEND_SLASH = False
 
 # Application definition
 
@@ -76,7 +76,7 @@ TEMPLATES = [
 ]
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
-        'core.utils.CustomApiRenderer',  # Replace with the path to your custom renderer
+        'core.utils.CustomApiRenderer',  
     ],
     'EXCEPTION_HANDLER':'core.error_handler.custom_exception_handler',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -87,11 +87,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10, 
 }
 SPECTACULAR_SETTINGS = {
-     'ENUM_NAME_OVERRIDES': {
-        'CustomerCorrectTariffCodeEnum': 'CorrectTariffCodeEnum',  
-        'CustomerMeterSaledEnum': 'MeterSaledEnum',  
-        'CustomerHasAccountNoEnum': 'HasAccountNoEnum',  
-    },
     'TITLE': 'IBEDC Validation API',
     'DESCRIPTION': 'Set of API for validation of customer data',
     'VERSION': '1.0.0',
@@ -180,3 +175,32 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EXTERNAL_STORAGE_ROOT = '/Users/oyejide/Documents/ibecd-docs/'
+# settings.py
+
+# Redis as the broker
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+# Task serialization and timezone
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'error.log',  # Log file path
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}

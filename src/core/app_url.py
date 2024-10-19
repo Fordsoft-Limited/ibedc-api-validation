@@ -8,6 +8,8 @@ class AppUri(Enum):
     REFRESH_TOKEN = ('token/refresh', 'refresh_token')
     CUSTOMER_SINGE_VALIDATE = ('validate', 'validate_single_customer')
     CUSTOMER_BULK_VALIDATE = ('validate/bulk', 'validate_bulk_customer')
+    CUSTOMER_BULK_VALIDATE_BATCH_DETAIL = ('validate/batches/<str:uid>', 'retrieve_batche_details')
+    CUSTOMER_BULK_VALIDATE_BATCHES = ('validate/batches', 'list_batches')
     CUSTOMER_RETRIEVE = ('<str:customer_no>', 'RETRIEVE')
     CUSTOMER_LIST = ('list', 'list_customer')
     CUSTOMER_LIST_BY_FEEDER_OR_BU = ('list/<str:filter_type>/<str:feeder>', 'list_customer_by_feeder_or_bu')

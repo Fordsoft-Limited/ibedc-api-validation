@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.forms import JSONField
 from django.utils import timezone
 from core.utils import generate_batch_code
 from core.model import BaseModel
@@ -10,7 +11,7 @@ class CustomerManager(models.Manager):
     """
     Custom manager for Customer model to handle filtering logic.
     """
-
+    
     def filter_all(self, filter_dict, use_or=False):
         """
         Takes a dictionary of key-value pairs and returns a filtered list of customers.
@@ -42,6 +43,7 @@ class CustomerBatch(BaseModel):
     total_approved = models.PositiveIntegerField(default=0)
     total_rejected = models.PositiveIntegerField(default=0)
     total_record = models.PositiveIntegerField(default=0)
+    upload_histories = models.JSONField(default=list, blank=True)
 
     def __str__(self):
         return f"Batch {self.batch_code} - {self.validation_type}"
@@ -76,6 +78,7 @@ class Customer(BaseModel):
     CONNECTION_TYPE_CHOICES = [
         ('Metered', 'Metered'),
         ('Un-Metered', 'Un-Metered'),
+        ('Unmetered', 'Unmetered'),
     ]
     
     SUPPLY_TYPE_CHOICES = [

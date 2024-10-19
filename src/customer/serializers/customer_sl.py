@@ -19,11 +19,21 @@ class CustomerBatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerBatch
         fields = [
-            'slug', 'batch_code', 'validation_type', 'created_by',
-            'total_approved', 'total_rejected', 'total_record','date_created','last_modified'
+            'batch_code', 'validation_type', 'created_by',
+            'total_approved', 'total_rejected', 'total_record',
+            'date_created','last_modified','uid'
+        ]
+
+class CustomerBatchDetailSerializer(serializers.ModelSerializer):
+    created_by =UserSerializer(read_only=True)
+    class Meta:
+        model = CustomerBatch
+        fields = [
+            'batch_code', 'validation_type', 'created_by',
+            'total_approved', 'total_rejected', 'total_record',
+            'date_created','last_modified','upload_histories'
         ]
         
-
 
 class CustomerSerializer(serializers.ModelSerializer):
     customer_batch = CustomBatchSerializer(read_only=True)
@@ -60,7 +70,6 @@ class CustomerSerializer(serializers.ModelSerializer):
         if customer_instance:
             existing_history = customer_instance.data_entry_history if customer_instance.data_entry_history else []
             existing_history.extend(validation_result)
-            print(existing_history)
             self.instance = customer_instance
             self.instance.data_entry_history = existing_history
         else:

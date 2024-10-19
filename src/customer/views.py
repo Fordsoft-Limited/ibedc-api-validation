@@ -1,24 +1,19 @@
 # views.py
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-import os
-from django.conf import settings
 
 from core.model import DataPagination
 from .serializers.upload_sl import FileUploadSerializer
-from core.constant import Notification
 from core.utils import ApiResponse
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
+from drf_spectacular.utils import extend_schema
 from core.custom_app_error import StandardApplicationException
-from core.views import BaseApiView
 from .models import Customer, CustomerBatch
-from .serializers.customer_sl import CustomerSerializer
+from .serializers.customer_sl import CustomerBatchDetailSerializer, CustomerBatchSerializer, CustomerSerializer
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from core.utils import Notification
 
 @extend_schema(
     request={
@@ -37,15 +32,10 @@ class FileUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     
     def post(self, request, *args, **kwargs):
-        serializer = FileUploadSerializer(data=request.data)
+        serializer = FileUploadSerializer(data=request.data, context={'user': request.user})
         if serializer.is_valid():
-            file = request.FILES['file']
-            external_file_path = os.path.join(settings.EXTERNAL_STORAGE_ROOT, file.name)
-            with open(external_file_path, 'wb+') as destination:
-                for chunk in file.chunks():
-                    destination.write(chunk)
-
-            return ApiResponse(data=Notification.FILE_UPLOADED.message).to_response()
+            batch = serializer.save() 
+            return ApiResponse(data=Notification.FILE_UPLOADED).to_response()
         else:
             raise StandardApplicationException(message=serializer.errors, code=400)
         
@@ -59,10 +49,23 @@ def validate_customer(request):
         serializer = CustomerSerializer(data=request.data, context={"created_by": request.user})
         if serializer.is_valid(raise_exception=True):
             serializer.save() 
-
             return ApiResponse(data="Customer processed successfully").to_response()
 
         return ApiResponse(errorMessage=serializer.errors, code=400).to_response()
+
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def list_batch_by_user(request):
+     user = request.user 
+     batch_by_user = CustomerBatch.objects.filter(created_by=user.id)
+     serializer = CustomerBatchSerializer(batch_by_user, many=True)
+     return ApiResponse(data = serializer.data).to_response()
+
+@api_view(['GET'])
+def retrieve_batch_by_uid(request, uid):
+     batch_by_user = CustomerBatch.objects.filter(uid=uid).first()
+     serializer = CustomerBatchDetailSerializer(batch_by_user)
+     return ApiResponse(data = serializer.data).to_response()
 
 class ListCustomerView(ListAPIView):
     queryset = Customer.objects.all()
