@@ -5,9 +5,12 @@ class Notification(Enum):
     LOGIN_FAIL = (404, 'Login failed: Either username or password is incorrect.')
     LOGOUT_SUCCESSFUL = (200, 'Logout completed successfully')
     ACCOUNT_CREATION_SUCCESS = (201, 'Success! Your account has been successfully created.')
+    CUSTOMER_NOT_FOUND = (404, 'Customer with specified constraint not found')
     PASSWORD_NOT_MATCH = (400, 'Old password not match existing password')
     PASSWORD_CHANGED = (200, 'Password changed successfully')
     FILE_UPLOADED = (200, 'File uploaded successfully')
+    APPROVAL_OR_REJECTION_COMPLETE = (200, "Customer successfully {}")
+
    
 
     def __init__(self, code, message):

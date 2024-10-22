@@ -7,6 +7,8 @@ from core.model import BaseModel
 
 from django.db.models import Q
 
+from customer.utils import CustomDateField
+
 class CustomerManager(models.Manager):
     """
     Custom manager for Customer model to handle filtering logic.
@@ -120,12 +122,12 @@ class Customer(BaseModel):
     lga = models.CharField(max_length=100)  # Local Government Area
     state = models.CharField(max_length=100)  # State
     nearest_landmark = models.CharField(max_length=255, null=True, blank=True)
-    setup_date = models.DateField(default=timezone.now)
+    setup_date = CustomDateField(null=False)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     customer_id = models.CharField(max_length=200, null=True, blank=True) 
     cin = models.CharField(max_length=50, null=False, blank=False)  
-    application_date = models.DateField(null=True, blank=True)
+    application_date = CustomDateField(null=False)
     mobile = models.CharField(max_length=15)
     email = models.EmailField(null=True, blank=True)
     status_code = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Active')
